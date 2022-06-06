@@ -1,11 +1,7 @@
 import sys
 from typing import List, Tuple
-from svgelements import SVG, Path, PathSegment, Line, Close, Move, CubicBezier, Point, Rect, Circle, Ellipse, SVGElement, Group
+from svgelements import SVG, Path, PathSegment, Line, Close, Point, Rect, Circle, Ellipse, SVGElement, Group
 from tkinter import Tk, Canvas
-
-
-def class_name(any):
-    return any.__class__.__name__
 
 
 def coords(*args: Point | Tuple[float, float]):
@@ -29,27 +25,6 @@ def oval_coords(oval: Circle | Ellipse):
 
 def is_path_closed(path: Path):
     return isinstance(path[-1], Close)
-
-
-def inspect_svg(svg: SVG):
-    for elem in svg.elements():
-        match elem:
-            case Path():
-                print(elem.__class__.__name__, elem.id, elem)
-                part: PathSegment
-                for part in elem.segments():
-                    name = class_name(part).lower() if part.relative else class_name(part)
-
-                    match part:
-                        case Line() | Close() | Move():
-                            print(f'  {name} ({part.start}) ({part.end})')
-                        case CubicBezier():
-                            print(f'  {name} ({part.start}) ({part.control1}) ({part.control2}) ({part.end})')
-                        case _:
-                            print(f'  {name} ({part})')
-
-            case _:
-                print(elem.__class__.__name__, elem.id)
 
 
 def draw_oval(oval: Ellipse | Circle):

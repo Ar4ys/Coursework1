@@ -4,6 +4,14 @@ from typing import Any, Callable, List, Tuple
 Point = Tuple[float | int, float | int]
 
 
+def point_on_circle(center: Point, radius: float | int, angle: int | float):
+    from math import cos, sin, radians
+    angle = radians(angle - 90)
+    x = center[0] + (radius * cos(angle))
+    y = center[1] + (radius * sin(angle))
+
+    return x, y
+
 def draw_oval(
     coords: Tuple[Point, ...],
     fill: str | None = None,
@@ -90,9 +98,12 @@ def with_shift(
 
 
 class Drawer:
+    timer = 0
+
     def draw_frame(self):
+        self.timer += 1
         self.background()
-        self.sun()
+        self.sun_layer()
         self.grass()
         self.bg_mountain_right()
         self.bg_mountain_left()
@@ -108,45 +119,92 @@ class Drawer:
     def background(self):
         draw_rect(((0, 0), (1284, 351)), fill='#3a5da5')
 
-    def sun(self):
-        draw_oval(((576, 80), (760, 270)), fill='#efdcbe')
-        draw_oval(((590, 97), (743, 254)), fill='#fcfad9')
-        draw_polygon(((610, 157), (635, 156), (635, 156), (652, 161), (663, 156), (683, 154), (687, 145), (681, 142),
-                      (669, 143), (661, 149), (641, 149), (632, 145), (616, 146), (609, 151), (610, 157)), fill='#f5eccf')
-        draw_oval(((623, 169), (642, 184)), fill='#fffcf0', outline='#d7c9c0', width=0.145)
-        draw_oval(((625, 175), (628, 179)), fill='#d5c6bd')
-        draw_oval(((655, 168), (674, 183)), fill='#fffcf0', outline='#d7c9c0', width=0.145)
-        draw_oval(((665, 173), (668, 176)), fill='#d5c6bd')
-        draw_polygon(((622, 224), (626, 208), (640, 193), (675, 190), (698, 205), (706, 218), (705, 233), (698, 241),
-                      (684, 242), (669, 239), (652, 238), (636, 238), (628, 240), (623, 234), (622, 224)), fill='#e45387')
-        draw_polygon(((653, 218), (641, 220), (637, 224), (636, 231), (636, 238), (652, 238), (669, 239),
-                      (684, 242), (688, 235), (689, 227), (685, 217), (666, 219), (661, 223), (653, 218)), fill='#efa0a8')
-        draw_polygon(((657, 192), (640, 193), (649, 200), (666, 199), (675, 190), (657, 192)), fill='#efa0a8')
+    def sun_layer(self):
+        speed = 1
+        sun_width = 185
+        sun_height = 190
+
+        angle = -75 + (self.timer * speed) % 160
+
+        position = point_on_circle(
+            center=(650, 500),
+            radius=300,
+            angle=angle
+        )
+
+        position = (position[0] - sun_width / 2, position[1] - sun_height / 2)
+        self.sun(position)
+
+
+    def sun(self, shift: Point = (0, 0)):
+        draw_oval(with_shift(shift, ((0, 0), (184, 190))), fill='#efdcbe')
+        draw_oval(with_shift(shift, ((14, 16), (167, 173))), fill='#fcfad9')
+        draw_polygon(
+            with_shift(
+                shift,
+                ((34, 76), (58, 75), (58, 75), (76, 80), (87, 75), (107, 73), (110, 64), (104, 62),
+                 (92, 62), (85, 69), (65, 68), (55, 65), (40, 65), (32, 70), (34, 76))
+            ),
+            fill='#f5eccf'
+        )
+        draw_oval(with_shift(shift, ((46, 89), (66, 104))), fill='#fffcf0', outline='#d7c9c0', width=0.145)
+        draw_oval(with_shift(shift, ((48, 95), (52, 98))), fill='#d5c6bd')
+        draw_oval(with_shift(shift, ((79, 87), (98, 102))), fill='#fffcf0', outline='#d7c9c0', width=0.145)
+        draw_oval(with_shift(shift, ((89, 92), (92, 96))), fill='#d5c6bd')
+        draw_polygon(
+            with_shift(
+                shift,
+                ((46, 143), (50, 127), (63, 112), (99, 110), (122, 124), (130, 138), (129, 152), (122, 160),
+                 (108, 162), (93, 159), (76, 157), (60, 158), (51, 159), (47, 153), (46, 143))
+            ),
+            fill='#e45387'
+        )
+        draw_polygon(
+            with_shift(
+                shift,
+                ((77, 137), (64, 139), (61, 143), (60, 150), (60, 158), (76, 157), (93, 159), (108, 162),
+                 (111, 154), (113, 146), (108, 136), (89, 138), (84, 142), (77, 137))
+            ),
+            fill='#efa0a8'
+        )
+        draw_polygon(
+            with_shift(
+                shift,
+                ((81, 111), (63, 112), (73, 119),
+                 (90, 118), (99, 110), (81, 111))
+            ),
+            fill='#efa0a8'
+        )
         repeat_draw(
             draw_rect,
             fill='#ffe0e6',
-            coords=(
-                ((666, 230), (672, 237)),
-                ((653, 230), (659, 237)),
-                ((640, 230), (647, 237)),
-                ((677, 231), (684, 238)),
-                ((659, 195), (665, 202)),
-                ((649, 195), (655, 202)),
-                ((635, 223), (639, 229)),
-                ((639, 218), (643, 224)),
-                ((682, 223), (685, 229)),
-                ((680, 216), (683, 222)),
+            coords=with_shift(
+                shift,
+                (((90, 149), (96, 156)),
+                 ((77, 149), (83, 156)),
+                 ((64, 149), (70, 156)),
+                 ((101, 150), (107, 157)),
+                 ((82, 114), (89, 121)),
+                 ((73, 114), (79, 121)),
+                 ((59, 142), (63, 148)),
+                 ((63, 137), (66, 143)),
+                 ((106, 142), (109, 149)),
+                 ((103, 135), (107, 141)))
             )
         )
 
     def clouds(self):
-        self.cloud((86, 67))
-        self.cloud((111, 199))
-        self.cloud((383, 32))
-        self.cloud((420, 161))
-        self.cloud((771, 42))
-        self.cloud((920, 187))
-        self.cloud((1035, 80))
+        speed = 2
+        cloud_width = 124
+        def move(x): return ((x + self.timer * speed) % (width + cloud_width)) - cloud_width
+
+        self.cloud((move(86), 67))
+        self.cloud((move(111), 199))
+        self.cloud((move(383), 32))
+        self.cloud((move(420), 161))
+        self.cloud((move(771), 42))
+        self.cloud((move(920), 187))
+        self.cloud((move(1035), 80))
 
     def cloud(self, shift: Point = (0, 0)):
         repeat_draw(
@@ -405,13 +463,14 @@ class Drawer:
         )
 
 
-def init_animation():
+def animation():
     # Optimization
     canvas.delete(*canvas_items)
     canvas_items.clear()
 
-    # 30 FPS
-    window.after(33, drawer.draw_frame)
+    drawer.draw_frame()
+
+    window.after(frame_time, animation)
 
 
 def init_window():
@@ -421,15 +480,20 @@ def init_window():
 
 
 def init_canvas(window: Tk):
-    canvas = Canvas(window, bg='white', height=720, width=1280)
+    canvas = Canvas(window, bg='white', height=height, width=width)
     canvas.pack()
     return canvas
 
+
+# 30 FPS
+frame_time = 33
+height = 720
+width = 1280
 
 canvas_items: List[int] = []
 
 window = init_window()
 canvas = init_canvas(window)
 drawer = Drawer()
-init_animation()
+animation()
 window.mainloop()

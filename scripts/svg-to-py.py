@@ -135,7 +135,7 @@ class Printer:
     def print_tk_init(self):
         self.print_split_lines("""
 from tkinter import Tk, Canvas
-from typing import List, Tuple
+from typing import Tuple
 
 window = Tk(baseName='Svg-To-Py', className='svg-to-py')
 window.title('Svg-To-Py')

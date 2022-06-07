@@ -18,17 +18,26 @@ class Printer:
     def print_group(self, group: Group):
         self.print_def(group.id)
 
+        is_empty = True
+
         elem: SVGElement
         for elem in group:
             match elem:
                 case Path():
+                    is_empty = False
                     self.print_path(elem)
                 case Rect():
+                    is_empty = False
                     self.print_rect(elem)
                 case Circle() | Ellipse():
+                    is_empty = False
                     self.print_oval(elem)
                 case Group():
+                    is_empty = False
                     self.print_group(elem)
+
+        if is_empty:
+            self.print('pass')
 
         self.indent_down()
         self.print(f'{group.id}()')

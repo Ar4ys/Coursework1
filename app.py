@@ -120,7 +120,7 @@ class Drawer:
         draw_rect(((0, 0), (1284, 351)), fill='#3a5da5')
 
     def sun_layer(self):
-        speed = 1
+        speed = 0.5
         sun_width = 185
         sun_height = 190
 
@@ -194,17 +194,16 @@ class Drawer:
         )
 
     def clouds(self):
-        speed = 2
         cloud_width = 124
-        def move(x): return ((x + self.timer * speed) % (width + cloud_width)) - cloud_width
+        def move(x, speed): return ((x + self.timer * speed) % (width + cloud_width)) - cloud_width
 
-        self.cloud((move(86), 67))
-        self.cloud((move(111), 199))
-        self.cloud((move(383), 32))
-        self.cloud((move(420), 161))
-        self.cloud((move(771), 42))
-        self.cloud((move(920), 187))
-        self.cloud((move(1035), 80))
+        self.cloud((move(86, 2), 67))
+        self.cloud((move(111, 1), 199))
+        self.cloud((move(383, 1.5), 32))
+        self.cloud((move(420, 2.5), 161))
+        self.cloud((move(771, 2), 42))
+        self.cloud((move(920, 1), 187))
+        self.cloud((move(1035, 1.5), 80))
 
     def cloud(self, shift: Point = (0, 0)):
         repeat_draw(

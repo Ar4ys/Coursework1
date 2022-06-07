@@ -12,8 +12,20 @@ class Printer:
     indent = 0
     buffer = ''
 
-    def __init__(self) -> None:
+    parse_coords_int = True
+    print_fun_in_line = True
+    with_tkinter = True
+
+    def print_svg(self, svg: SVG):
+        if self.with_tkinter:
+            self.print_tk_init()
         self.print_helpers()
+        self.print_group(svg)
+        if self.with_tkinter:
+            self.print_tk_mainloop()
+
+        return self.buffer
+
 
     def print_group(self, group: Group):
         self.print_def(group.id)
@@ -79,14 +91,14 @@ class Printer:
         width: float | None = None
     ):
         to_print = f'{name}('
-        coords = int_coords(coords) if parse_coords_int else coords
+        coords = int_coords(coords) if self.parse_coords_int else coords
 
         if not fill and not outline and not width:
             to_print += f'{coords})'
             self.print(to_print)
             return
 
-        if print_fun_in_line:
+        if self.print_fun_in_line:
             to_print += f'{coords}'
             to_print += f", fill='{fill}'" if fill else ''
             if outline:
@@ -119,6 +131,20 @@ class Printer:
                 outline=path.stroke.hex,
                 width=path.stroke_width,
             )
+
+    def print_tk_init(self):
+        self.print_split_lines("""
+from tkinter import Tk, Canvas
+from typing import List, Tuple
+
+window = Tk(baseName='Svg-To-Py', className='svg-to-py')
+window.title('Svg-To-Py')
+canvas = Canvas(window, bg='white', height=720, width=1280)
+canvas.pack()
+""")
+
+    def print_tk_mainloop(self):
+        self.print('window.mainloop()')
 
     def print_helpers(self):
         self.print_split_lines("""
@@ -390,14 +416,10 @@ window: Tk
 canvas: Canvas
 printer: Printer
 
-parse_coords_int = True
-print_fun_in_line = True
-
 match command:
     case 'compile':
         printer = Printer()
-        printer.print_group(svg)
-        print(printer.buffer)
+        print(printer.print_svg(svg))
     case 'view':
         window = init_window()
         canvas = init_canvas(window)

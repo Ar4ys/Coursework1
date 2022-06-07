@@ -18,7 +18,10 @@ class Printer:
 
     def print_svg(self, svg: SVG):
         if self.with_tkinter:
-            self.print_tk_init()
+            self.print_tk_init(
+                width=svg.width or 1280,
+                height=svg.height or 720
+            )
         self.print_helpers()
         self.print_group(svg)
         if self.with_tkinter:
@@ -132,14 +135,14 @@ class Printer:
                 width=path.stroke_width,
             )
 
-    def print_tk_init(self):
-        self.print_split_lines("""
+    def print_tk_init(self, width: int | float, height: int | float):
+        self.print_split_lines(f"""
 from tkinter import Tk, Canvas
 from typing import Tuple
 
 window = Tk(baseName='Svg-To-Py', className='svg-to-py')
 window.title('Svg-To-Py')
-canvas = Canvas(window, bg='white', height=720, width=1280)
+canvas = Canvas(window, bg='white', height={height}, width={width})
 canvas.pack()
 """)
 
